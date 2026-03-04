@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
 {
@@ -30,7 +33,6 @@ class Order extends Model
         ];
     }
 
-    // ─── Relationships ───────────────────────────────
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -41,7 +43,6 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    // ─── Auto-generate order number ──────────────────
     protected static function booted(): void
     {
         static::creating(function (Order $order) {
