@@ -4,13 +4,15 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +23,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'avatar',
+        'status',
+        'phone',
     ];
 
     /**
@@ -44,5 +49,27 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        return $this->avatar
+            ? asset('storage/' . $this->avatar)
+            : 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
     }
 }
